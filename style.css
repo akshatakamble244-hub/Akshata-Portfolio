@@ -1,0 +1,2242 @@
+/* ==========================================================================
+   Akshata Kamble | Portfolio Stylesheet
+   Theme: dark black / dark-gray with cyan + neon-blue glowing borders
+   --------------------------------------------------------------------------
+   CONTENTS
+     1.  Design tokens (colours, spacing, motion)
+     2.  Reset and base
+     3.  Background glow + grid
+     4.  Right-side vertical navigation rail
+     5.  Mobile drawer menu
+     6.  Buttons, tags, chips
+     7.  Layout basics: page, section, card
+     8.  Home / hero
+     9.  About
+     10. Skills
+     11. Education timeline
+     12. Projects
+     13. Learning / Career
+     14. Contact + form
+     15. Footer
+     16. Animations
+     17. Responsive (desktop / tablet / mobile)
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1. DESIGN TOKENS
+   Change the colours here to re-theme the whole site.
+   ========================================================================== */
+:root {
+    /* Dark backgrounds */
+    --bg:            #04060d;
+    --bg-2:          #070b16;
+    --bg-card:       #0a1020;
+    --bg-card-2:     #0c1425;
+
+    /* Cyan / neon blue accents */
+    --cyan:          #22d3ee;
+    --cyan-bright:   #67e8f9;
+    --blue:          #3b82f6;
+    --blue-bright:   #60a5fa;
+
+    /* Text */
+    --text:          #e8f0fd;
+    --text-soft:     #9fb0c9;
+    --text-dim:      #6d7f99;
+
+    /* Borders + glows */
+    --line:          rgba(34, 211, 238, 0.16);
+    --line-strong:   rgba(34, 211, 238, 0.42);
+    --line-soft:     rgba(255, 255, 255, 0.07);
+    --glow-cyan:     rgba(34, 211, 238, 0.32);
+    --glow-blue:     rgba(59, 130, 246, 0.24);
+
+    /* Shape */
+    --radius:        20px;
+    --radius-sm:     13px;
+    --radius-pill:   999px;
+    --rail-width:    84px;
+    --gutter:        26px;
+    --maxw:          1120px;
+    /* Height of the fixed top navigation bar, and the extra breathing room
+       kept below it so anchor jumps never land underneath the bar. */
+    --topbar-h:      66px;
+    --topbar-gap:    22px;
+
+    /* Motion */
+    --ease:          cubic-bezier(0.4, 0, 0.2, 1);
+    --fast:          0.25s var(--ease);
+    --mid:           0.4s var(--ease);
+
+    /* Fonts */
+    --font-head:     "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+    --font-body:     "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+    --font-mono:     "JetBrains Mono", Consolas, monospace;
+}
+
+
+/* ==========================================================================
+   2. RESET AND BASE
+   ========================================================================== */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+    /* NOTE: this stays 0 on purpose. The offset that keeps section headings
+       clear of the fixed top bar is handled once, in the scroll-margin rule
+       on the section selector. Setting both would stack them and over-shoot
+       the target by double the distance. */
+    scroll-padding-top: 0;
+    overflow-x: hidden;              /* no sideways scrollbar, ever */
+}
+
+body {
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.72;
+    color: var(--text);
+    background: var(--bg);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    /* Makes <body> the containing block for the absolutely positioned
+       .deco-field, so the floating bubbles can be spread over the full
+       document height. position:relative with no offsets changes no layout. */
+    position: relative;
+}
+
+img { display: block; max-width: 100%; }
+a   { color: inherit; text-decoration: none; }
+ul, ol { list-style: none; }
+svg { display: block; }
+
+:focus-visible {
+    outline: 2px solid var(--cyan);
+    outline-offset: 3px;
+    border-radius: 8px;
+}
+
+::selection {
+    background: rgba(34, 211, 238, 0.3);
+    color: #fff;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar        { width: 10px; }
+::-webkit-scrollbar-track  { background: var(--bg-2); }
+::-webkit-scrollbar-thumb  {
+    background: linear-gradient(var(--cyan), var(--blue));
+    border-radius: var(--radius-pill);
+    border: 2px solid var(--bg-2);
+}
+
+/* Gradient text used for names and headings */
+.grad {
+    background: linear-gradient(100deg, var(--cyan-bright) 0%, var(--cyan) 40%, var(--blue-bright) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+
+/* ==========================================================================
+   3. BACKGROUND GLOW + GRID
+   ========================================================================== */
+.bg-glow,
+.bg-grid,
+.bg-bubbles {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Animated bubbles sit above the static glow/grid but below .page (z-index:1) */
+.bg-bubbles {
+    display: block;
+    width: 100%;
+    height: 100%;
+    /* Bright enough to actually see on a dark screen. The bigger glows are
+       still drawn fainter than the small dots, and the whole field sits behind
+       opaque text, so headings and paragraphs stay perfectly legible. */
+    opacity: 0.85;
+    filter: saturate(1.25);
+}
+
+/* ==========================================================================
+   3b. FLOATING DECORATIVE BUBBLES  (the clearly visible layer)
+   --------------------------------------------------------------------------
+   script.js drops one <i class="bubble"> per decoration into .deco-field,
+   positioned as a percentage of the whole page, so the bubbles are spread
+   from the top of the hero all the way down to the footer.
+
+   Stacking, exactly as required:
+       .deco-field   z-index 0    <- these bubbles, and the fine dot canvas
+       .page         z-index 1    <- all text, cards and buttons
+       .topbar       z-index 80   <- navigation
+   Because the bubbles are *behind* the content they can never cover or
+   intercept a word or a button, and .deco-field is pointer-events:none.
+   ========================================================================== */
+.deco-field {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+/* The outer element drifts. The inner one pulses / spins. Splitting the two
+   lets a bubble drift AND rotate at the same time, which is impossible if both
+   animations tried to own the `transform` property. */
+.bubble {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: var(--s);
+    height: var(--s);
+    margin-left: calc(var(--s) / -2);
+    margin-top: calc(var(--s) / -2);
+    opacity: 0;
+    will-change: transform, opacity;
+    animation: decoDrift var(--dur) ease-in-out var(--delay) infinite;
+}
+
+.bubble > span {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at 34% 30%, var(--c1) 0%, var(--c2) 48%, var(--c3) 100%);
+    box-shadow:
+        0 0 var(--g) var(--c2),
+        inset 0 0 16px rgba(255, 255, 255, 0.3);
+    /* Two animations on one element would fight over `transform`, and the last
+       one listed would simply win. So the shape decides: radially symmetric
+       shapes pulse, shapes you can actually see turning rotate. */
+    animation: decoPulse var(--pdur) ease-in-out var(--delay) infinite alternate;
+}
+
+/* Slow turn, only on the shapes where rotation actually reads */
+.bubble--dot > span,
+.bubble--ring > span,
+.bubble--square > span,
+.bubble--tri > span,
+.bubble--diamond > span,
+.bubble--heart > span {
+    animation: decoSpin var(--sdur) linear var(--delay) infinite;
+}
+
+/* ---- Shape variants ---------------------------------------------------- */
+
+/* Small, hard-edged glowing dot */
+.bubble--dot > span {
+    background: radial-gradient(circle, #ffffff 0%, var(--c1) 38%, var(--c2) 100%);
+    box-shadow: 0 0 var(--g) var(--c2);
+}
+
+/* Hollow neon ring */
+.bubble--ring > span {
+    background: none;
+    border: 2px solid var(--c1);
+    box-shadow:
+        0 0 var(--g) var(--c2),
+        inset 0 0 10px var(--c2);
+}
+
+/* Big soft blurred circle - no hard edge, just a wide glow */
+.bubble--soft > span {
+    background: radial-gradient(circle, var(--c1) 0%, var(--c2) 34%, transparent 72%);
+    box-shadow: none;
+    filter: blur(var(--blur));
+}
+
+/* clip-path shapes cannot use box-shadow (it gets clipped away), so these use
+   drop-shadow, which is applied after clipping and follows the outline. */
+.bubble--tri > span {
+    border-radius: 0;
+    background: linear-gradient(160deg, var(--c1), var(--c2) 55%, var(--c3));
+    box-shadow: none;
+    clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+    filter: drop-shadow(0 0 calc(var(--g) * 0.7) var(--c2));
+}
+
+.bubble--diamond > span {
+    border-radius: 0;
+    background: linear-gradient(160deg, var(--c1), var(--c2) 55%, var(--c3));
+    box-shadow: none;
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    filter: drop-shadow(0 0 calc(var(--g) * 0.7) var(--c2));
+}
+
+.bubble--square > span {
+    border-radius: 22%;
+    background: linear-gradient(160deg, var(--c1), var(--c2) 55%, var(--c3));
+    filter: drop-shadow(0 0 calc(var(--g) * 0.7) var(--c2));
+}
+
+/* Heart, drawn as an inline SVG so it stays crisp at any size */
+.bubble--heart > span {
+    background: no-repeat center / contain
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 29S2.5 20.8 2.5 12.4A7.4 7.4 0 0 1 16 8.2a7.4 7.4 0 0 1 13.5 4.2C29.5 20.8 16 29 16 29z' fill='%23ffffff'/%3E%3C/svg%3E");
+    box-shadow: none;
+    filter: drop-shadow(0 0 calc(var(--g) * 0.6) var(--c2));
+}
+
+/* ---- Motion ------------------------------------------------------------ */
+
+/* Slow vertical + horizontal drift. Opacity breathes inside the same cycle so
+   a bubble eases in and out instead of blinking - but it never reaches zero,
+   so every decoration stays on screen the whole time. */
+@keyframes decoDrift {
+    0% {
+        transform: translate3d(0, 0, 0) scale(0.92);
+        opacity: calc(var(--o) * 0.5);
+    }
+    50% {
+        opacity: var(--o);
+    }
+    100% {
+        transform: translate3d(var(--dx), var(--dy), 0) scale(1.06);
+        opacity: calc(var(--o) * 0.5);
+    }
+}
+
+/* Gentle breathing */
+@keyframes decoPulse {
+    from { transform: scale(1); }
+    to   { transform: scale(1.14); }
+}
+
+/* Slow turn, only applied to the shapes where rotation actually reads */
+@keyframes decoSpin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+/* Visitors who ask for less motion still get the bubbles, just held still. */
+@media (prefers-reduced-motion: reduce) {
+    .bubble {
+        animation: none;
+        opacity: var(--o);
+        transform: scale(1);
+    }
+    .bubble > span {
+        animation: none;
+    }
+    .bg-bubbles {
+        animation: none;
+    }
+}
+
+.bg-glow::before,
+.bg-glow::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(140px);
+}
+
+.bg-glow::before {
+    width: 620px;
+    height: 620px;
+    top: -200px;
+    right: 6%;
+    background: radial-gradient(circle, var(--glow-cyan) 0%, transparent 68%);
+    animation: float 11s ease-in-out infinite;
+}
+
+.bg-glow::after {
+    width: 680px;
+    height: 680px;
+    bottom: -240px;
+    left: 26%;
+    background: radial-gradient(circle, var(--glow-blue) 0%, transparent 68%);
+    animation: float 14s ease-in-out infinite reverse;
+}
+
+.bg-grid {
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse at 60% 0%, #000 25%, transparent 76%);
+    -webkit-mask-image: radial-gradient(ellipse at 60% 0%, #000 25%, transparent 76%);
+}
+
+
+/* ==========================================================================
+   3.5 TOP NAVIGATION BAR
+   A fixed bar across the top of the page holding the brand and the eight
+   section links. It is always visible: the hero starts below it, and every
+   anchor jump is offset by --topbar-h so nothing hides behind the bar.
+   ========================================================================== */
+.topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 80;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    height: var(--topbar-h);
+    padding: 0 var(--gutter);
+    /* Right edge stops short of the icon rail so the two never overlap */
+    padding-right: calc(var(--gutter) + var(--rail-width));
+
+    background: rgba(4, 6, 13, 0.72);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+
+    border-bottom: 1px solid var(--line-soft);
+    transition: background var(--mid), border-color var(--mid), box-shadow var(--mid);
+}
+
+/* A cyan hairline of light along the bottom edge */
+.topbar::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 1px;
+    background: linear-gradient(90deg,
+        transparent,
+        var(--line-strong) 18%,
+        var(--line-strong) 82%,
+        transparent);
+    opacity: 0.55;
+    pointer-events: none;
+}
+
+/* Gains a stronger glow once the page is scrolled */
+.topbar.is-scrolled {
+    background: rgba(4, 6, 13, 0.93);
+    border-bottom-color: var(--line);
+    box-shadow: 0 10px 34px rgba(0, 0, 0, 0.55);
+}
+
+.topbar.is-scrolled::after { opacity: 1; }
+
+/* ---- Brand ---- */
+.topbar__brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: none;
+    text-decoration: none;
+    color: var(--text);
+}
+
+.topbar__mark {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    font-family: var(--font-head);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--cyan-bright);
+    background: rgba(34, 211, 238, 0.1);
+    border: 1px solid var(--line-strong);
+    box-shadow: 0 0 16px rgba(34, 211, 238, 0.22);
+    transition: box-shadow var(--mid), transform var(--mid);
+}
+
+.topbar__brand:hover .topbar__mark {
+    box-shadow: 0 0 24px rgba(34, 211, 238, 0.45);
+    transform: translateY(-1px);
+}
+
+.topbar__name {
+    font-family: var(--font-head);
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+}
+
+/* ---- The eight links ---- */
+.topbar__nav {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+}
+
+.topbar__link {
+    position: relative;
+    padding: 8px 11px;
+    border-radius: 9px;
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+    color: var(--text-soft);
+    text-decoration: none;
+    transition: color var(--fast), background var(--fast);
+}
+
+.topbar__link:hover {
+    color: var(--text);
+    background: rgba(34, 211, 238, 0.08);
+}
+
+/* Underline grows out of the middle on hover */
+.topbar__link::after {
+    content: "";
+    position: absolute;
+    left: 11px;
+    right: 11px;
+    bottom: 2px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--cyan);
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform var(--mid);
+}
+
+.topbar__link:hover::after { transform: scaleX(0.6); }
+
+/* Active section: cyan text plus a persistent glowing underline */
+.topbar__link.is-active {
+    color: var(--cyan-bright);
+    text-shadow: 0 0 14px rgba(34, 211, 238, 0.55);
+}
+
+.topbar__link.is-active::after {
+    transform: scaleX(1);
+    box-shadow: 0 0 12px rgba(34, 211, 238, 0.85);
+}
+
+/* When the mobile menu is open the bar tints so the state is obvious */
+.topbar.is-menu-open {
+    background: rgba(4, 6, 13, 0.97);
+    border-bottom-color: var(--line-strong);
+}
+
+/* ==========================================================================
+   4. RIGHT-SIDE VERTICAL NAVIGATION RAIL
+   A fixed rail pinned to the right edge with one icon per section.
+   ========================================================================== */
+.rail {
+    position: fixed;
+    top: 50%;
+    right: 16px;
+    z-index: 70;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px 10px;
+    transform: translateY(-50%);
+    background: rgba(7, 11, 22, 0.78);
+    border: 1px solid rgba(34, 211, 238, 0.38);
+    border-radius: 24px;
+    box-shadow: 0 0 20px rgba(34, 211, 238, 0.2), 0 0 48px rgba(34, 211, 238, 0.09),
+                inset 0 0 22px rgba(34, 211, 238, 0.05);
+    transition: box-shadow var(--mid), border-color var(--mid);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+}
+
+.rail__link {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    color: var(--text-dim);
+    border: 1px solid transparent;
+    border-radius: 14px;
+    transition: color var(--fast), background var(--fast),
+                border-color var(--fast), box-shadow var(--fast), transform var(--fast);
+}
+
+.rail__icon {
+    width: 21px;
+    height: 21px;
+    transition: transform var(--fast);
+}
+
+.rail__link:hover {
+    color: var(--cyan);
+    background: rgba(34, 211, 238, 0.09);
+    border-color: var(--line);
+    transform: translateX(-3px);
+}
+
+.rail__link:hover .rail__icon {
+    transform: scale(1.12);
+}
+
+/* Active section (set by script.js while scrolling) */
+.rail__link.is-active {
+    color: var(--cyan);
+    background: rgba(34, 211, 238, 0.14);
+    border-color: var(--line-strong);
+    box-shadow: 0 0 22px rgba(34, 211, 238, 0.28), inset 0 0 14px rgba(34, 211, 238, 0.12);
+}
+
+.rail__link.is-active .rail__icon {
+    filter: drop-shadow(0 0 7px var(--cyan));
+}
+
+/* Glowing bar on the outer edge of the active icon */
+.rail__link.is-active::after {
+    content: "";
+    position: absolute;
+    right: -11px;
+    top: 50%;
+    width: 3px;
+    height: 24px;
+    transform: translateY(-50%);
+    background: linear-gradient(var(--cyan), var(--blue));
+    border-radius: var(--radius-pill);
+    box-shadow: 0 0 12px var(--cyan);
+}
+
+/* Label that slides out on hover / when active */
+.rail__tip {
+    position: absolute;
+    right: calc(100% + 12px);
+    top: 50%;
+    transform: translate(8px, -50%);
+    padding: 6px 12px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    white-space: nowrap;
+    color: var(--cyan);
+    background: rgba(8, 12, 24, 0.95);
+    border: 1px solid var(--line-strong);
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--fast), transform var(--fast);
+}
+
+.rail__link:hover .rail__tip,
+.rail__link.is-active .rail__tip {
+    opacity: 1;
+    transform: translate(0, -50%);
+}
+
+
+/* ==========================================================================
+   5. MOBILE DRAWER MENU
+   On small screens the rail slides in from the right behind a toggle.
+   ========================================================================== */
+.drawer-toggle {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 90;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 46px;
+    height: 46px;
+    padding: 0 12px;
+    cursor: pointer;
+    background: rgba(8, 12, 24, 0.9);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55);
+    transition: border-color var(--fast), box-shadow var(--fast);
+}
+
+.drawer-toggle:hover {
+    border-color: var(--line-strong);
+    box-shadow: 0 0 22px rgba(34, 211, 238, 0.24);
+}
+
+.drawer-toggle__bar {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background: var(--cyan);
+    border-radius: 2px;
+    transition: transform var(--mid), opacity var(--fast);
+}
+
+/* Three bars become an X when the drawer is open */
+.drawer-toggle.is-open .drawer-toggle__bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.drawer-toggle.is-open .drawer-toggle__bar:nth-child(2) { opacity: 0; }
+.drawer-toggle.is-open .drawer-toggle__bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+.drawer-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 65;
+    background: rgba(2, 4, 10, 0.7);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--mid), visibility var(--mid);
+}
+
+.drawer-overlay.is-visible { opacity: 1; visibility: visible; }
+
+/* Stop the page scrolling while the drawer is open */
+body.is-menu-open { overflow: hidden; }
+
+
+/* ==========================================================================
+   6. BUTTONS, TAGS AND CHIPS
+   ========================================================================== */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 13px 24px;
+    font-family: var(--font-body);
+    font-size: 14.5px;
+    font-weight: 600;
+    white-space: nowrap;
+    border: 1px solid transparent;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    transition: transform var(--fast), box-shadow var(--fast),
+                background var(--fast), border-color var(--fast), color var(--fast);
+}
+
+.btn svg { width: 17px; height: 17px; }
+
+/* Filled cyan gradient with a soft neon glow */
+.btn--primary {
+    color: #02121a;
+    background: linear-gradient(135deg, var(--cyan-bright) 0%, var(--cyan) 45%, var(--blue) 100%);
+    box-shadow: 0 10px 30px rgba(34, 211, 238, 0.28);
+}
+
+.btn--primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 42px rgba(34, 211, 238, 0.46);
+}
+
+/* Transparent with a glowing cyan outline */
+.btn--outline {
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.03);
+    border-color: var(--line);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.btn--outline:hover {
+    color: var(--cyan);
+    border-color: var(--line-strong);
+    box-shadow: 0 0 24px rgba(34, 211, 238, 0.2);
+    transform: translateY(-3px);
+}
+
+.btn--sm    { padding: 10px 20px; font-size: 13.5px; }
+
+/* Small label */
+.tag {
+    display: inline-block;
+    padding: 5px 13px;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.6px;
+    color: var(--text-soft);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius-pill);
+}
+
+.tag--accent {
+    color: var(--cyan);
+    background: rgba(34, 211, 238, 0.1);
+    border-color: rgba(34, 211, 238, 0.34);
+}
+
+/* Technology chips */
+.chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.chip {
+    padding: 6px 13px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--text-soft);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius-pill);
+    transition: color var(--fast), background var(--fast),
+                border-color var(--fast), transform var(--fast);
+}
+
+.chip:hover {
+    color: var(--cyan);
+    background: rgba(34, 211, 238, 0.09);
+    border-color: rgba(34, 211, 238, 0.4);
+    transform: translateY(-2px);
+}
+
+.chips--lg .chip { padding: 9px 17px; font-size: 13.5px; }
+
+
+/* ==========================================================================
+   7. LAYOUT BASICS
+   ========================================================================== */
+.page {
+    position: relative;
+    z-index: 1;
+    /* Leaves room for the navigation rail on the right */
+    margin-right: var(--rail-width);
+    /* Top padding = height of the fixed top bar, so the hero is never hidden
+       behind it. The bar itself is transparent-blurred, so this only adds
+       space rather than covering anything. */
+    padding: var(--topbar-h) var(--gutter) 0;
+}
+
+.section {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 100px 0 0;
+    /* Keeps the section title clear of the fixed top bar on anchor jumps */
+    scroll-margin-top: calc(var(--topbar-h) + var(--topbar-gap));
+}
+
+.section:last-of-type { padding-bottom: 20px; }
+
+.sec-head { margin-bottom: 44px; }
+
+.sec-head--center { text-align: center; }
+
+.sec-head__eyebrow {
+    display: inline-block;
+    margin-bottom: 12px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 2.4px;
+    text-transform: uppercase;
+    color: var(--cyan);
+}
+
+.sec-head__title {
+    font-family: var(--font-head);
+    font-size: clamp(28px, 4.4vw, 40px);
+    font-weight: 700;
+    line-height: 1.16;
+    letter-spacing: -0.6px;
+}
+
+.sec-head__lead {
+    max-width: 640px;
+    margin-top: 14px;
+    color: var(--text-soft);
+    font-size: 15.5px;
+}
+
+.sec-head--center .sec-head__lead { margin-left: auto; margin-right: auto; }
+
+/* Smaller heading inside a section (Currently Learning) */
+.sub-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    font-family: var(--font-head);
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.sub-title svg {
+    width: 20px;
+    height: 20px;
+    color: var(--cyan);
+}
+
+/* Dark glass card with a glowing border on hover */
+.card {
+    position: relative;
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.018));
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    transition: transform var(--mid), border-color var(--mid), box-shadow var(--mid);
+}
+
+/* Cyan/blue gradient edge that lights up on hover */
+.card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, var(--cyan), var(--blue));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity var(--mid);
+    pointer-events: none;
+}
+
+.card:hover {
+    transform: translateY(-6px);
+    border-color: transparent;
+    box-shadow: 0 22px 50px rgba(0, 0, 0, 0.45), 0 0 36px rgba(34, 211, 238, 0.1);
+}
+
+.card:hover::after { opacity: 1; }
+
+
+/* ==========================================================================
+   7b. INTRODUCTION
+   The short "I'm Akshata, And I'm AI Engineer" block that follows the hero.
+   ========================================================================== */
+.intro__inner {
+    max-width: 780px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.intro__eyebrow {
+    display: inline-block;
+    padding: 7px 18px;
+    margin-bottom: 22px;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    background: rgba(34, 211, 238, 0.08);
+    border: 1px solid rgba(34, 211, 238, 0.3);
+    border-radius: 999px;
+    box-shadow: 0 0 18px rgba(34, 211, 238, 0.16);
+}
+
+.intro__title {
+    font-size: clamp(1.9rem, 4.4vw, 3.1rem);
+    line-height: 1.16;
+    letter-spacing: -0.02em;
+}
+
+.intro__text {
+    max-width: 640px;
+    margin: 22px auto 0;
+    font-size: 1.02rem;
+    line-height: 1.82;
+    color: var(--text-soft);
+}
+
+.intro__tags {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 26px;
+    padding: 0;
+    list-style: none;
+}
+
+.intro__tags li {
+    padding: 7px 16px;
+    font-size: 0.84rem;
+    color: var(--text-soft);
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid var(--line-soft);
+    border-radius: 999px;
+    transition: color var(--fast), border-color var(--fast), box-shadow var(--mid);
+}
+
+.intro__tags li:hover {
+    color: var(--cyan);
+    border-color: rgba(34, 211, 238, 0.4);
+    box-shadow: 0 0 16px rgba(34, 211, 238, 0.18);
+}
+
+/* ==========================================================================
+   8. HOME / HERO
+   ========================================================================== */
+.hero {
+    /* .page already reserves --topbar-h above the hero, so the hero itself
+       only needs the rest of the viewport to fill exactly one screen. */
+    min-height: calc(100vh - var(--topbar-h));
+    display: flex;
+    align-items: center;
+    padding-top: 34px;
+    padding-bottom: 20px;
+}
+
+.hero__grid {
+    display: grid;
+    grid-template-columns: 0.85fr 1.15fr;
+    gap: 62px;
+    align-items: center;
+    width: 100%;
+}
+
+/* --- Profile photo with double neon ring --- */
+.hero__photo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+}
+
+.avatar {
+    position: relative;
+    width: min(320px, 100%);
+    aspect-ratio: 1 / 1;
+    border-radius: 30px;
+}
+
+.avatar__glow {
+    position: absolute;
+    inset: -14px;
+    background: linear-gradient(140deg, var(--cyan), var(--blue));
+    border-radius: 40px;
+    filter: blur(26px);
+    opacity: 0.4;
+    transition: opacity var(--mid);
+}
+
+/* Bright cyan neon border around the photo */
+.avatar__ring {
+    position: absolute;
+    inset: -3px;
+    border-radius: 33px;
+    padding: 2px;
+    background: linear-gradient(140deg, var(--cyan), rgba(34, 211, 238, 0.35) 45%, var(--blue));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    box-shadow: 0 0 22px rgba(34, 211, 238, 0.5), 0 0 54px rgba(34, 211, 238, 0.22);
+    pointer-events: none;
+    transition: box-shadow var(--mid);
+}
+
+.avatar__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 14%;
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 28px 64px rgba(0, 0, 0, 0.55);
+    transition: transform var(--mid);
+}
+
+.avatar:hover .avatar__glow { opacity: 0.66; }
+.avatar:hover .avatar__ring { box-shadow: 0 0 30px rgba(34, 211, 238, 0.7), 0 0 70px rgba(34, 211, 238, 0.3); }
+.avatar:hover .avatar__img { transform: scale(1.02); }
+
+/* Social buttons under the photo: square-ish neon cyan outline */
+.hero__socials {
+    display: flex;
+    gap: 14px;
+    margin-top: 4px;
+}
+
+.social-btn {
+    display: grid;
+    place-items: center;
+    width: 54px;
+    height: 54px;
+    color: var(--cyan);
+    background: rgba(34, 211, 238, 0.06);
+    border: 1.5px solid rgba(34, 211, 238, 0.5);
+    border-radius: 16px;
+    box-shadow: 0 0 16px rgba(34, 211, 238, 0.16);
+    transition: color var(--fast), border-color var(--fast), background var(--mid),
+                box-shadow var(--mid), transform var(--mid);
+}
+
+.social-btn svg {
+    width: 25px;
+    height: 25px;
+    display: block;
+}
+
+.social-btn:hover,
+.social-btn:focus-visible {
+    color: #0a1020;
+    background: var(--cyan);
+    border-color: var(--cyan);
+    transform: translateY(-4px);
+    box-shadow: 0 0 26px rgba(34, 211, 238, 0.65), 0 0 56px rgba(34, 211, 238, 0.35);
+}
+
+.social-btn:active { transform: translateY(-1px); }
+
+/* Big glowing "Contact Me!" button */
+.btn--contact {
+    margin-top: 2px;
+    padding: 16px 42px;
+    font-size: 1.02rem;
+    letter-spacing: 0.02em;
+    color: #04060d;
+    background: linear-gradient(135deg, var(--cyan), var(--blue));
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 999px;
+    box-shadow: 0 0 26px rgba(34, 211, 238, 0.42), 0 0 60px rgba(34, 211, 238, 0.2);
+    transition: transform var(--mid), box-shadow var(--mid), filter var(--mid);
+}
+
+.btn--contact:hover,
+.btn--contact:focus-visible {
+    color: #04060d;
+    transform: translateY(-3px);
+    filter: brightness(1.08);
+    box-shadow: 0 0 34px rgba(34, 211, 238, 0.6), 0 0 78px rgba(34, 211, 238, 0.32);
+}
+
+.btn--contact:active { transform: translateY(-1px); }
+
+.hero__tagline {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 19px;
+    font-size: 13.5px;
+    font-weight: 500;
+    text-align: center;
+    background: rgba(8, 12, 24, 0.88);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-pill);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+}
+
+.hero__tagline-dot {
+    width: 7px;
+    height: 7px;
+    flex-shrink: 0;
+    background: var(--cyan);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--cyan);
+    animation: pulse 2.4s ease-in-out infinite;
+}
+
+/* --- Text side --- */
+.eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+    padding: 8px 17px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    letter-spacing: 0.8px;
+    color: var(--cyan);
+    background: rgba(34, 211, 238, 0.08);
+    border: 1px solid rgba(34, 211, 238, 0.28);
+    border-radius: var(--radius-pill);
+}
+
+.eyebrow__dot {
+    width: 7px;
+    height: 7px;
+    background: var(--cyan);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--cyan);
+}
+
+.hero__title {
+    font-family: var(--font-head);
+    font-size: clamp(34px, 5.4vw, 56px);
+    font-weight: 700;
+    line-height: 1.08;
+    letter-spacing: -1.2px;
+}
+
+.hero__headline {
+    margin-top: 12px;
+    font-family: var(--font-mono);
+    font-size: clamp(13.5px, 2vw, 16.5px);
+    letter-spacing: 1.4px;
+    color: var(--cyan);
+}
+
+.hero__text {
+    max-width: 600px;
+    margin-top: 22px;
+    color: var(--text-soft);
+    font-size: 16px;
+}
+
+.hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 32px;
+}
+
+.hero__focus {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 34px;
+    padding-top: 26px;
+    border-top: 1px solid var(--line-soft);
+}
+
+.hero__focus li {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--text-dim);
+}
+
+.hero__focus li:not(:last-child)::after {
+    content: "\2022";
+    margin-left: 10px;
+    color: var(--cyan);
+}
+
+
+/* ==========================================================================
+   9. ABOUT
+   ========================================================================== */
+.about {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 26px;
+    align-items: start;
+}
+
+.about__text { padding: 32px 30px; }
+
+.about__text p {
+    color: var(--text-soft);
+    font-size: 15.5px;
+}
+
+.about__text p + p { margin-top: 16px; }
+
+.about__quote {
+    margin-top: 22px;
+    padding: 16px 20px;
+    font-size: 14.5px;
+    font-style: italic;
+    color: var(--cyan-bright) !important;
+    background: rgba(34, 211, 238, 0.06);
+    border-left: 3px solid var(--cyan);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.about__list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.about__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 20px 22px;
+}
+
+.about__icon {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+    color: var(--cyan);
+    background: rgba(34, 211, 238, 0.1);
+    border: 1px solid rgba(34, 211, 238, 0.24);
+    border-radius: 13px;
+}
+
+.about__icon svg { width: 21px; height: 21px; }
+
+.about__item h3 {
+    margin-bottom: 3px;
+    font-family: var(--font-head);
+    font-size: 15.5px;
+    font-weight: 600;
+}
+
+.about__item p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-soft);
+}
+
+
+/* ==========================================================================
+   10. SKILLS
+   ========================================================================== */
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 22px;
+}
+
+.skill-card { padding: 28px 26px; }
+
+.skill-card__head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 12px;
+}
+
+.skill-card__icon {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    flex-shrink: 0;
+    color: var(--cyan);
+    background: linear-gradient(140deg, rgba(34, 211, 238, 0.16), rgba(59, 130, 246, 0.1));
+    border: 1px solid rgba(34, 211, 238, 0.26);
+    border-radius: 14px;
+    transition: transform var(--mid), box-shadow var(--mid);
+}
+
+.skill-card:hover .skill-card__icon {
+    transform: translateY(-3px) scale(1.06);
+    box-shadow: 0 0 24px rgba(34, 211, 238, 0.26);
+}
+
+.skill-card__icon svg { width: 23px; height: 23px; }
+
+.skill-card__title {
+    font-family: var(--font-head);
+    font-size: 18.5px;
+    font-weight: 600;
+}
+
+.skill-card__desc {
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: var(--text-soft);
+}
+
+
+/* ==========================================================================
+   11. EDUCATION TIMELINE
+   ========================================================================== */
+.timeline {
+    position: relative;
+    padding-left: 46px;
+}
+
+/* The vertical glowing line that runs the length of the timeline */
+.timeline::before {
+    content: "";
+    position: absolute;
+    left: 9px;
+    top: 10px;
+    bottom: 10px;
+    width: 2px;
+    background: linear-gradient(
+        180deg,
+        var(--cyan) 0%,
+        var(--cyan) 55%,
+        rgba(59, 130, 246, 0.55) 82%,
+        transparent 100%
+    );
+    box-shadow: 0 0 10px rgba(34, 211, 238, 0.75), 0 0 26px rgba(34, 211, 238, 0.35);
+}
+
+.timeline__item {
+    position: relative;
+    margin-bottom: 22px;
+}
+
+/* Cyan neon border on every education card, visible at rest */
+.timeline__item {
+    background: linear-gradient(160deg, rgba(34, 211, 238, 0.05), rgba(255, 255, 255, 0.015));
+    border: 1px solid rgba(34, 211, 238, 0.32);
+    box-shadow: 0 0 22px rgba(34, 211, 238, 0.12), 0 18px 42px rgba(0, 0, 0, 0.4);
+}
+
+.timeline__item:last-child { margin-bottom: 0; }
+
+.timeline__item:hover {
+    border-color: rgba(34, 211, 238, 0.7);
+    box-shadow: 0 0 34px rgba(34, 211, 238, 0.24), 0 22px 50px rgba(0, 0, 0, 0.45);
+}
+
+/* Glowing circular point on the line, next to each card */
+.timeline__marker {
+    position: absolute;
+    left: -46px;
+    top: 34px;
+    width: 20px;
+    height: 20px;
+    background: var(--bg);
+    border: 2px solid var(--cyan);
+    border-radius: 50%;
+    box-shadow: 0 0 12px rgba(34, 211, 238, 0.9), 0 0 28px rgba(34, 211, 238, 0.45);
+    transform: translateX(0);
+}
+
+/* Bright core inside each point */
+.timeline__marker::after {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    background: var(--cyan);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--cyan);
+    animation: timeline-pulse 3.2s ease-in-out infinite;
+    transition: transform var(--mid);
+}
+
+@keyframes timeline-pulse {
+    0%, 100% { opacity: 0.65; transform: scale(0.9); }
+    50%      { opacity: 1;    transform: scale(1.15); }
+}
+
+.timeline__item:nth-child(2) .timeline__marker::after { animation-delay: 0.5s; }
+.timeline__item:nth-child(3) .timeline__marker::after { animation-delay: 1s; }
+
+.timeline__item:hover .timeline__marker {
+    border-color: #7ae7ff;
+    box-shadow: 0 0 18px rgba(34, 211, 238, 1), 0 0 40px rgba(34, 211, 238, 0.6);
+}
+
+.timeline__item:hover .timeline__marker::after { transform: scale(1.25); }
+
+.timeline__body { padding: 30px 32px; }
+
+/* Year / date pill */
+.timeline__period {
+    display: inline-block;
+    margin-bottom: 14px;
+    padding: 6px 15px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 1px;
+    color: var(--cyan);
+    background: rgba(34, 211, 238, 0.1);
+    border: 1px solid rgba(34, 211, 238, 0.45);
+    border-radius: var(--radius-pill);
+    box-shadow: 0 0 14px rgba(34, 211, 238, 0.2);
+}
+
+/* White typography for the degree names */
+.timeline__title {
+    margin-bottom: 16px;
+    font-family: var(--font-head);
+    font-size: 23px;
+    font-weight: 600;
+    line-height: 1.3;
+    color: #ffffff;
+}
+
+.timeline__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 26px;
+    margin-bottom: 20px;
+}
+
+.timeline__org {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 14.5px;
+    color: var(--text-soft);
+}
+
+.timeline__org svg {
+    width: 17px;
+    height: 17px;
+    color: var(--cyan);
+    opacity: 0.85;
+}
+
+.timeline__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line-soft);
+}
+
+
+/* ==========================================================================
+   12. PROJECTS
+   ========================================================================== */
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 22px;
+}
+
+.project {
+    display: flex;
+    flex-direction: column;
+    padding: 28px 26px;
+}
+
+/* Featured project spans the full row */
+.project--featured {
+    grid-column: 1 / -1;
+    padding: 36px 34px;
+    background: linear-gradient(150deg, rgba(34, 211, 238, 0.1), rgba(59, 130, 246, 0.05) 45%, rgba(255, 255, 255, 0.02));
+    border-color: rgba(34, 211, 238, 0.22);
+}
+
+.project__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+
+.project__num {
+    font-family: var(--font-head);
+    font-size: 34px;
+    font-weight: 700;
+    line-height: 1;
+    color: rgba(255, 255, 255, 0.07);
+}
+
+.project__title {
+    margin-bottom: 12px;
+    font-family: var(--font-head);
+    font-size: 21px;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.project--featured .project__title { font-size: 26px; }
+
+.project__desc {
+    margin-bottom: 22px;
+    font-size: 14.5px;
+    color: var(--text-soft);
+}
+
+/* Pushes the button to the bottom so all cards line up */
+.project__actions {
+    margin-top: auto;
+    padding-top: 24px;
+}
+
+
+/* ==========================================================================
+   13. LEARNING / CAREER
+   ========================================================================== */
+.learn-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-bottom: 26px;
+}
+
+.learn-card { padding: 26px 22px; }
+
+.learn-card__num {
+    display: block;
+    margin-bottom: 14px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    letter-spacing: 1.5px;
+    color: var(--cyan);
+    opacity: 0.75;
+}
+
+.learn-card__title {
+    margin-bottom: 9px;
+    font-family: var(--font-head);
+    font-size: 16.5px;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+.learn-card__desc {
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--text-soft);
+}
+
+.career {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 22px;
+}
+
+.career__card { padding: 30px; }
+
+.career__label {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 18px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--cyan);
+}
+
+.career__label svg { width: 16px; height: 16px; }
+
+.career__label--spaced { margin-top: 28px; }
+
+.career__text {
+    font-size: 16px;
+    line-height: 1.75;
+    color: var(--text);
+}
+
+/* Headline statement for "Current Learning" inside Learning & Career */
+.career__lead {
+    margin: -6px 0 24px;
+    font-family: var(--font-head);
+    font-size: clamp(19px, 2.2vw, 25px);
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--text);
+    text-shadow: 0 0 18px rgba(34, 211, 238, 0.28);
+}
+
+.career__lead::after {
+    content: "";
+    display: block;
+    width: 74px;
+    height: 2px;
+    margin-top: 14px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--cyan), transparent);
+}
+
+/* ---------- Certificate ---------- */
+.cert-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.cert-list:empty {
+    display: none;
+}
+
+/* One card per verified certificate */
+.cert-card {
+    display: flex;
+    gap: 16px;
+    padding: 24px;
+}
+
+.cert-card__icon {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    color: var(--cyan);
+    background: rgba(34, 211, 238, 0.1);
+    border: 1px solid rgba(34, 211, 238, 0.28);
+    box-shadow: 0 0 20px rgba(34, 211, 238, 0.18) inset;
+}
+
+.cert-card__icon svg {
+    width: 22px;
+    height: 22px;
+}
+
+.cert-card__body {
+    min-width: 0;
+}
+
+.cert-card__title {
+    font-family: var(--font-head);
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.45;
+}
+
+.cert-card__meta {
+    margin-top: 6px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--cyan);
+}
+
+.cert-card__desc {
+    margin-top: 10px;
+    font-size: 14.5px;
+    line-height: 1.7;
+    color: var(--muted);
+}
+
+.cert-card__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 14px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: var(--cyan);
+    text-decoration: none;
+}
+
+.cert-card__link:hover { text-shadow: 0 0 14px rgba(34, 211, 238, 0.7); }
+
+.cert-card__link svg { width: 15px; height: 15px; }
+
+/* Shown only while no certificates have been added */
+.cert-empty {
+    max-width: 620px;
+    margin: 0 auto;
+    padding: 40px 30px;
+    text-align: center;
+}
+
+.cert-empty__icon {
+    display: grid;
+    place-items: center;
+    width: 62px;
+    height: 62px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    color: var(--cyan);
+    background: rgba(34, 211, 238, 0.08);
+    border: 1px solid rgba(34, 211, 238, 0.25);
+    box-shadow: 0 0 26px rgba(34, 211, 238, 0.16);
+}
+
+.cert-empty__icon svg { width: 28px; height: 28px; }
+
+.cert-empty__title {
+    font-family: var(--font-head);
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.cert-empty__text {
+    margin: 12px auto 24px;
+    max-width: 460px;
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--muted);
+}
+
+/* Learn -> Build -> Experiment -> Improve -> Share */
+.flow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 14px;
+}
+
+.flow__step {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    padding: 11px 20px;
+    font-family: var(--font-head);
+    font-size: 14.5px;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.045);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-pill);
+    transition: color var(--fast), border-color var(--fast),
+                box-shadow var(--fast), transform var(--fast);
+}
+
+.flow__step:hover {
+    color: var(--cyan);
+    border-color: var(--line-strong);
+    box-shadow: 0 0 20px rgba(34, 211, 238, 0.2);
+    transform: translateY(-3px);
+}
+
+.flow__step:not(:last-child)::after {
+    content: "\2192";
+    position: absolute;
+    right: -15px;
+    font-size: 15px;
+    color: var(--cyan);
+    opacity: 0.75;
+}
+
+
+/* ==========================================================================
+   14. CONTACT + FORM
+   ========================================================================== */
+.contact__title {
+    /* Stronger neon glow on the Contact heading */
+    text-shadow: 0 0 26px rgba(34, 211, 238, 0.35);
+}
+
+.contact__title-glow {
+    background: linear-gradient(100deg, var(--cyan-bright), var(--cyan) 45%, var(--blue-bright));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    filter: drop-shadow(0 0 16px rgba(34, 211, 238, 0.55));
+}
+
+.contact__grid {
+    display: grid;
+    grid-template-columns: 1.25fr 0.75fr;
+    gap: 24px;
+    align-items: start;
+}
+
+.contact__card {
+    padding: 36px 34px;
+}
+
+.contact__intro {
+    margin-bottom: 30px;
+    font-size: 16.5px;
+    line-height: 1.78;
+    color: var(--text-soft);
+}
+
+/* --- Form --- */
+.form__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+}
+
+.field { margin-bottom: 20px; }
+.form__row .field { margin-bottom: 0; }
+
+.field__label {
+    display: block;
+    margin-bottom: 9px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+    color: var(--text-soft);
+}
+
+.field__input {
+    width: 100%;
+    padding: 14px 17px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: var(--text);
+    background: rgba(3, 6, 14, 0.75);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius-sm);
+    outline: none;
+    transition: border-color var(--fast), box-shadow var(--fast), background var(--fast);
+}
+
+.field__input::placeholder {
+    color: var(--text-dim);
+    opacity: 0.75;
+}
+
+.field__input:hover {
+    border-color: rgba(34, 211, 238, 0.3);
+}
+
+/* Cyan glow when the field is focused */
+.field__input:focus {
+    border-color: var(--line-strong);
+    background: rgba(4, 8, 18, 0.9);
+    box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.12), 0 0 22px rgba(34, 211, 238, 0.16);
+}
+
+.field__input--area {
+    min-height: 150px;
+    resize: vertical;
+    line-height: 1.65;
+}
+
+.form__error {
+    margin-bottom: 16px;
+    padding: 11px 15px;
+    font-size: 13.5px;
+    color: #fda4af;
+    background: rgba(244, 63, 94, 0.1);
+    border: 1px solid rgba(244, 63, 94, 0.3);
+    border-radius: var(--radius-sm);
+}
+
+.btn--send {
+    width: 100%;
+    padding: 16px 28px;
+    font-size: 14px;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+}
+
+.form__note {
+    margin-top: 16px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-dim);
+    overflow-wrap: anywhere;        /* the email can never be cut off */
+}
+
+.form__note a {
+    color: var(--cyan);
+    border-bottom: 1px solid rgba(34, 211, 238, 0.35);
+    transition: color var(--fast);
+}
+
+.form__note a:hover { color: var(--cyan-bright); }
+
+/* --- Direct contact links --- */
+.contact__side {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px 22px;
+}
+
+.contact-item__icon {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    flex-shrink: 0;
+    color: var(--cyan);
+    background: rgba(34, 211, 238, 0.1);
+    border: 1px solid rgba(34, 211, 238, 0.26);
+    border-radius: 50%;
+    transition: transform var(--mid), box-shadow var(--mid), background var(--mid);
+}
+
+.contact-item__icon svg { width: 21px; height: 21px; }
+
+.contact-item:hover .contact-item__icon {
+    transform: scale(1.08);
+    box-shadow: 0 0 24px rgba(34, 211, 238, 0.26);
+}
+
+.contact-item__body {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;                   /* lets long emails wrap, never overflow */
+    line-height: 1.5;
+}
+
+.contact-item__label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+}
+
+.contact-item__value {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    /* Breaks the email across lines on narrow screens instead of clipping */
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.contact-item:hover .contact-item__value { color: var(--cyan); }
+
+
+/* ==========================================================================
+   15. FOOTER
+   ========================================================================== */
+.footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 30px 0 46px;
+    font-size: 14px;
+    color: var(--text-dim);
+    border-top: 1px solid var(--line-soft);
+}
+
+.footer__top {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    letter-spacing: 0.6px;
+    color: var(--text-soft);
+    transition: color var(--fast);
+}
+
+.footer__top:hover { color: var(--cyan); }
+
+
+/* ==========================================================================
+   16. ANIMATIONS
+   ========================================================================== */
+
+/* Sections fade and rise into view (class added by script.js) */
+.reveal {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.75s var(--ease), transform 0.75s var(--ease);
+}
+
+.reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-22px); }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1;    box-shadow: 0 0 10px var(--cyan); }
+    50%      { opacity: 0.5;  box-shadow: 0 0 18px var(--cyan); }
+}
+
+/* Respect the user's motion preference */
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+
+    .reveal,
+    .bg-glow::before,
+    .bg-glow::after,
+    .hero__tagline-dot,
+    .eyebrow__dot,
+    .timeline__marker::after {
+        animation: none !important;
+        transition: none !important;
+        opacity: 1;
+    }
+}
+
+
+/* ==========================================================================
+   17. RESPONSIVE
+   Desktop -> tablet -> mobile
+   ========================================================================== */
+
+/* ---- Large desktop ---- */
+@media (min-width: 1600px) {
+    :root { --gutter: 46px; }
+}
+
+/* ---- Tablet landscape: learning cards wrap to 2 columns ---- */
+@media (max-width: 1200px) {
+    .learn-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ---- Between 1025px and 1400px the text column is narrow,
+        so use a tidy 2x2 button grid instead of a 3 + 1 wrap ---- */
+@media (min-width: 1025px) and (max-width: 1400px) {
+    .hero__actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        max-width: 430px;
+    }
+
+    .btn { padding: 12px 16px; font-size: 13.5px; }
+}
+
+/* ---- Small tablet: the two-column blocks stack ---- */
+/* ---- Top navigation bar ---- */
+@media (max-width: 1400px) {
+    .topbar__link { padding: 8px 8px; font-size: 13px; }
+}
+
+@media (max-width: 1200px) {
+    .topbar__name { display: none; }
+    .topbar__link { padding: 8px 7px; font-size: 12.5px; }
+}
+
+@media (max-width: 1024px) {
+    :root { --topbar-h: 60px; }
+    .topbar__link { padding: 8px 6px; font-size: 12px; }
+    .topbar__nav { gap: 0; }
+}
+
+@media (max-width: 820px) {
+    /* On phones the eight links move into the hamburger menu, so the bar
+       keeps only the brand and the menu button. The bar itself stays. */
+    :root { --topbar-h: 58px; }
+
+    .topbar {
+        /* The rail is off-canvas here, so the bar can use the full width */
+        padding-right: var(--gutter);
+    }
+
+    .topbar__nav { display: none; }
+
+    .topbar__name { display: inline; font-size: 14px; }
+
+    /* The hamburger is now docked in the bar rather than floating on the page */
+    .drawer-toggle {
+        position: static;
+        margin-left: auto;
+        z-index: auto;
+        flex: none;
+    }
+}
+
+@media (max-width: 380px) {
+    .topbar__name { font-size: 13px; }
+    .topbar__mark { width: 29px; height: 29px; font-size: 12px; }
+}
+
+@media (max-width: 1024px) {
+    .hero__grid,
+    .about,
+    .career,
+    .contact__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hero__photo { order: -1; }            /* photo first on narrow screens */
+    .avatar      { width: min(250px, 68vw); }
+
+    .skills-grid,
+    .projects-grid { grid-template-columns: 1fr; }
+
+    .project--featured { grid-column: auto; }
+}
+
+/* ---- Mobile: the rail becomes a slide-in drawer ---- */
+@media (max-width: 820px) {
+    :root {
+        --gutter: 20px;
+    }
+
+    .section { padding-top: 74px; }
+    .hero    { padding-top: 92px; min-height: auto; }
+
+    .avatar  { width: min(272px, 100%); }
+    .social-btn { width: 48px; height: 48px; border-radius: 15px; }
+    .social-btn svg { width: 22px; height: 22px; }
+    .btn--contact { padding: 14px 32px; }
+
+    /* Rail sits off the right edge until opened */
+    .rail {
+        top: auto;
+        right: 0;
+        bottom: 0;
+        left: auto;
+        flex-direction: column;
+        gap: 3px;
+        padding: 12px 10px;
+        transform: translateX(calc(100% + 20px));
+        border-radius: 20px 0 0 0;
+        transition: transform var(--mid);
+    }
+
+    .rail.is-open { transform: translateX(0); }
+
+    .rail__icon { width: 19px; height: 19px; }
+
+    /* Labels are always visible in the drawer, no hover needed */
+    .rail__tip {
+        position: static;
+        transform: none;
+        opacity: 1;
+        padding: 0;
+        font-size: 11.5px;
+        color: var(--text-soft);
+        background: none;
+        border: none;
+        box-shadow: none;
+    }
+
+    /* Compact rows keep the drawer narrow so the backdrop stays tappable */
+    .rail__link {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        height: auto;
+        padding: 8px 10px;
+    }
+
+    .rail__link.is-active .rail__tip { color: var(--cyan); }
+
+    .rail__link.is-active::after { right: 6px; }
+
+    .drawer-toggle { display: flex; }
+
+    /* Content no longer needs a right margin for the rail */
+    .page { margin-right: 0; }
+
+    .learn-grid { grid-template-columns: 1fr; }
+}
+
+/* ---- Small phones ---- */
+@media (max-width: 560px) {
+    body { font-size: 15.5px; }
+
+    .hero__actions .btn { width: 100%; }
+    .hero__actions          { display: flex; }
+
+    .form__row { grid-template-columns: 1fr; }
+
+    .timeline { padding-left: 30px; }
+    .timeline::before { left: 6px; }
+    .timeline__marker { left: -30px; width: 15px; height: 15px; top: 28px; }
+    .timeline__marker::after { inset: 3px; }
+
+    .about__text,
+    .career__card,
+    .contact__card,
+    .skill-card,
+    .project,
+    .project--featured { padding: 24px 20px; }
+
+    .timeline__body { padding: 24px 20px; }
+    .about__item,
+    .contact-item   { padding: 18px; }
+
+    .contact__intro { font-size: 15.5px; }
+
+    .footer {
+        justify-content: center;
+        text-align: center;
+    }
+}
+
+/* ---- Very small phones ---- */
+@media (max-width: 380px) {
+    .hero__title { font-size: 29px; }
+    .project--featured .project__title { font-size: 20px; }
+    .btn--send  { font-size: 12.5px; letter-spacing: 1.1px; }
+    .rail__tip  { font-size: 11px; }
+}
