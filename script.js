@@ -197,7 +197,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     /* The hero is on screen as soon as the page opens */
-    const heroSection = document.getElementById("home");
+    const heroSection = document.getElementById("introduction");
     if (heroSection) {
         heroSection.classList.add("is-visible");
     }

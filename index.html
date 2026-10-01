@@ -54,27 +54,25 @@
     <!-- ======================================================================
          TOP NAVIGATION BAR
          A fixed bar across the top of every page: brand on the left, the
-         eight section links on the right. It stays visible while scrolling
+         six section links on the right. It stays visible while scrolling
          and turns into a single hamburger button on small screens.
          ====================================================================== -->
     <header class="topbar" id="topbar">
-        <a class="topbar__brand" href="#home" aria-label="Akshata Kamble, back to top">
+        <a class="topbar__brand" href="#introduction" aria-label="Akshata Kamble, back to top">
             <span class="topbar__mark" aria-hidden="true">AK</span>
             <span class="topbar__name">Akshata&nbsp;Kamble</span>
         </a>
 
         <nav class="topbar__nav" id="topbarNav" aria-label="Main navigation">
-            <a class="topbar__link is-active" href="#home">Home</a>
-            <a class="topbar__link" href="#about">About</a>
+            <a class="topbar__link is-active" href="#introduction">Introduction</a>
+            <a class="topbar__link" href="#projects">Projects</a>
             <a class="topbar__link" href="#skills">Skills</a>
             <a class="topbar__link" href="#education">Education</a>
-            <a class="topbar__link" href="#projects">Projects</a>
-            <a class="topbar__link" href="#learning-career">Learning &amp; Career</a>
-            <a class="topbar__link" href="#certificate">Certificate</a>
+            <a class="topbar__link" href="#certificates">Certificates</a>
             <a class="topbar__link" href="#contact">Contact</a>
         </nav>
 
-        <!-- On mobile this button opens the menu that holds all eight links.
+        <!-- On mobile this button opens the menu that holds all six links.
              It is the same control that used to float over the page, now
              docked in the right-hand end of the top bar. -->
         <button class="drawer-toggle" id="drawerToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="rail">
@@ -90,14 +88,14 @@
          The active icon glows and shows its label.
          ====================================================================== -->
     <nav class="rail" id="rail" aria-label="Section navigation">
-        <a class="rail__link is-active" href="#home" data-tip="Home">
-            <svg class="rail__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-            <span class="rail__tip">Home</span>
+        <a class="rail__link is-active" href="#introduction" data-tip="Introduction">
+            <svg class="rail__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
+            <span class="rail__tip">Introduction</span>
         </a>
 
-        <a class="rail__link" href="#about" data-tip="About">
-            <svg class="rail__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
-            <span class="rail__tip">About</span>
+        <a class="rail__link" href="#projects" data-tip="Projects">
+            <svg class="rail__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+            <span class="rail__tip">Projects</span>
         </a>
 
         <a class="rail__link" href="#skills" data-tip="Skills">
@@ -110,19 +108,9 @@
             <span class="rail__tip">Education</span>
         </a>
 
-        <a class="rail__link" href="#projects" data-tip="Projects">
-            <svg class="rail__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
-            <span class="rail__tip">Projects</span>
-        </a>
-
-        <a class="rail__link" href="#learning-career" data-tip="Learning &amp; Career">
-            <svg class="rail__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
-            <span class="rail__tip">Learning &amp; Career</span>
-        </a>
-
-        <a class="rail__link" href="#certificate" data-tip="Certificate">
+        <a class="rail__link" href="#certificates" data-tip="Certificates">
             <svg class="rail__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"/><circle cx="12" cy="8" r="6"/></svg>
-            <span class="rail__tip">Certificate</span>
+            <span class="rail__tip">Certificates</span>
         </a>
 
         <a class="rail__link" href="#contact" data-tip="Contact">
@@ -141,8 +129,11 @@
          ====================================================================== -->
     <main class="page">
 
-        <!-- ======================= 1. HOME ======================= -->
-        <section class="section hero" id="home">
+        <!-- ======================= 1. INTRODUCTION ======================= -->
+        <!-- The hero, the intro text, the About cards and the Learning & Career
+             blocks all live inside this one section, so the page has exactly the
+             six sections the right-hand rail links to. -->
+        <section class="section hero" id="introduction" aria-labelledby="introTitle">
             <div class="hero__grid">
 
                 <!-- Profile photo -->
@@ -212,10 +203,7 @@
                 </div>
 
             </div>
-        </section>
 
-        <!-- ======================= INTRODUCTION ======================= -->
-        <section class="section intro" id="introduction" aria-labelledby="introTitle">
             <div class="intro__inner">
                 <span class="intro__eyebrow">Introduction</span>
 
@@ -239,13 +227,11 @@
                     <li>LLMs &amp; RAG</li>
                 </ul>
             </div>
-        </section>
 
-        <!-- ======================= 2. ABOUT ======================= -->
-        <section class="section" id="about">
-            <div class="sec-head">
-                <span class="sec-head__eyebrow">01 — About</span>
-                <h2 class="sec-head__title">About <span class="grad">Me</span></h2>
+            <!-- ---------- About me: a quick look at who I am ---------- -->
+            <div class="sec-head sec-head--sub">
+                <span class="sec-head__eyebrow">About</span>
+                <h3 class="sec-head__title">About <span class="grad">Me</span></h3>
                 <p class="sec-head__lead">A quick look at who I am and what I am working towards.</p>
             </div>
 
@@ -315,6 +301,81 @@
                         </div>
                     </li>
                 </ul>
+            </div>
+        </section>
+
+        <!-- ======================= 2. PROJECTS ======================= -->
+        <section class="section" id="projects">
+            <div class="sec-head">
+                <span class="sec-head__eyebrow">01 — Projects</span>
+                <h2 class="sec-head__title">My <span class="grad">Projects</span></h2>
+                <p class="sec-head__lead">Practical AI applications I have built to learn and apply modern AI concepts.</p>
+            </div>
+
+            <div class="projects-grid">
+
+                <!-- Featured project: real repository link -->
+                <article class="card project project--featured">
+                    <div class="project__top">
+                        <span class="tag tag--accent">Featured Project</span>
+                        <span class="project__num">01</span>
+                    </div>
+                    <h3 class="project__title">AI Customer Support Agent</h3>
+                    <p class="project__desc">
+                        A practical AI-based customer support application designed to handle customer queries and
+                        provide useful responses using structured customer and order information.
+                    </p>
+                    <ul class="chips">
+                        <li class="chip">Python</li>
+                        <li class="chip">AI</li>
+                        <li class="chip">MySQL</li>
+                        <li class="chip">Ollama</li>
+                        <li class="chip">Customer Support Automation</li>
+                    </ul>
+                    <div class="project__actions">
+                        <a class="btn btn--primary btn--sm" href="https://github.com/akshatakamble244-hub/AI-Customer-Support-Agent/tree/main" target="_blank" rel="noopener noreferrer">
+                            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48l-.01-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.9 1.53 2.36 1.09 2.94.83.09-.65.35-1.09.63-1.34-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.5 9.5 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85l-.01 2.75c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"/></svg>
+                            View on GitHub
+                        </a>
+                    </div>
+                </article>
+
+                <!-- No public repository, so no link is shown -->
+                <article class="card project">
+                    <div class="project__top">
+                        <span class="tag">Generative AI</span>
+                        <span class="project__num">02</span>
+                    </div>
+                    <h3 class="project__title">Student LangChain Chatbot</h3>
+                    <p class="project__desc">
+                        A Generative AI student chatbot exploring LangChain, Retrieval-Augmented Generation (RAG),
+                        and local LLM workflows.
+                    </p>
+                    <ul class="chips">
+                        <li class="chip">Python</li>
+                        <li class="chip">Generative AI</li>
+                        <li class="chip">LangChain</li>
+                        <li class="chip">RAG</li>
+                        <li class="chip">Ollama</li>
+                    </ul>
+                </article>
+
+                <!-- No public repository, so no link is shown -->
+                <article class="card project">
+                    <div class="project__top">
+                        <span class="tag">Foundations</span>
+                        <span class="project__num">03</span>
+                    </div>
+                    <h3 class="project__title">Python Basic Programs</h3>
+                    <p class="project__desc">
+                        A collection of Python programs for programming fundamentals and problem solving.
+                    </p>
+                    <ul class="chips">
+                        <li class="chip">Python</li>
+                        <li class="chip">Problem Solving</li>
+                    </ul>
+                </article>
+
             </div>
         </section>
 
@@ -450,87 +511,11 @@
                 </article>
 
             </div>
-        </section>
 
-        <!-- ======================= 5. PROJECTS ======================= -->
-        <section class="section" id="projects">
+        <!-- ============ LEARNING &amp; CAREER (folded into the Education section) ============ -->
+        <div class="learning-career">
             <div class="sec-head">
-                <span class="sec-head__eyebrow">04 — Projects</span>
-                <h2 class="sec-head__title">My <span class="grad">Projects</span></h2>
-                <p class="sec-head__lead">Practical AI applications I have built to learn and apply modern AI concepts.</p>
-            </div>
-
-            <div class="projects-grid">
-
-                <!-- Featured project: real repository link -->
-                <article class="card project project--featured">
-                    <div class="project__top">
-                        <span class="tag tag--accent">Featured Project</span>
-                        <span class="project__num">01</span>
-                    </div>
-                    <h3 class="project__title">AI Customer Support Agent</h3>
-                    <p class="project__desc">
-                        A practical AI-based customer support application designed to handle customer queries and
-                        provide useful responses using structured customer and order information.
-                    </p>
-                    <ul class="chips">
-                        <li class="chip">Python</li>
-                        <li class="chip">AI</li>
-                        <li class="chip">MySQL</li>
-                        <li class="chip">Ollama</li>
-                        <li class="chip">Customer Support Automation</li>
-                    </ul>
-                    <div class="project__actions">
-                        <a class="btn btn--primary btn--sm" href="https://github.com/akshatakamble244-hub/AI-Customer-Support-Agent/tree/main" target="_blank" rel="noopener noreferrer">
-                            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48l-.01-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.9 1.53 2.36 1.09 2.94.83.09-.65.35-1.09.63-1.34-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.5 9.5 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85l-.01 2.75c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"/></svg>
-                            View on GitHub
-                        </a>
-                    </div>
-                </article>
-
-                <!-- No public repository, so no link is shown -->
-                <article class="card project">
-                    <div class="project__top">
-                        <span class="tag">Generative AI</span>
-                        <span class="project__num">02</span>
-                    </div>
-                    <h3 class="project__title">Student LangChain Chatbot</h3>
-                    <p class="project__desc">
-                        A Generative AI student chatbot exploring LangChain, Retrieval-Augmented Generation (RAG),
-                        and local LLM workflows.
-                    </p>
-                    <ul class="chips">
-                        <li class="chip">Python</li>
-                        <li class="chip">Generative AI</li>
-                        <li class="chip">LangChain</li>
-                        <li class="chip">RAG</li>
-                        <li class="chip">Ollama</li>
-                    </ul>
-                </article>
-
-                <!-- No public repository, so no link is shown -->
-                <article class="card project">
-                    <div class="project__top">
-                        <span class="tag">Foundations</span>
-                        <span class="project__num">03</span>
-                    </div>
-                    <h3 class="project__title">Python Basic Programs</h3>
-                    <p class="project__desc">
-                        A collection of Python programs for programming fundamentals and problem solving.
-                    </p>
-                    <ul class="chips">
-                        <li class="chip">Python</li>
-                        <li class="chip">Problem Solving</li>
-                    </ul>
-                </article>
-
-            </div>
-        </section>
-
-        <!-- ============== 5. LEARNING &amp; CAREER (ONE combined section) ============== -->
-        <section class="section" id="learning-career">
-            <div class="sec-head">
-                <span class="sec-head__eyebrow">05 — Learning &amp; Career</span>
+                <span class="sec-head__eyebrow">Learning &amp; Career</span>
                 <h2 class="sec-head__title">Learning &amp; <span class="grad">Career</span></h2>
                 <p class="sec-head__lead">What I am learning right now, what interests me, and the direction I am heading.</p>
             </div>
@@ -607,14 +592,15 @@
                     </ol>
                 </div>
             </div>
+        </div>
         </section>
 
-        <!-- ======================= 6. CERTIFICATE ======================= -->
+        <!-- ======================= 5. CERTIFICATES ======================= -->
         <!-- NOTE: no certificate names/issuers/dates are listed here, because none have
              been confirmed yet. Add one .cert-card per verified certificate below. -->
-        <section class="section" id="certificate">
+        <section class="section" id="certificates">
             <div class="sec-head">
-                <span class="sec-head__eyebrow">06 — Certificate</span>
+                <span class="sec-head__eyebrow">04 — Certificates</span>
                 <h2 class="sec-head__title">Certifi<span class="grad">cation</span></h2>
                 <p class="sec-head__lead">Verified credentials and certifications I have completed.</p>
             </div>
@@ -637,7 +623,7 @@
         <!-- ======================= 7. CONTACT ======================= -->
         <section class="section" id="contact">
             <div class="sec-head sec-head--center">
-                <span class="sec-head__eyebrow">07 — Contact</span>
+                <span class="sec-head__eyebrow">05 — Contact</span>
                 <h2 class="sec-head__title contact__title">Contact <span class="contact__title-glow">Me</span></h2>
             </div>
 
@@ -728,7 +714,7 @@
         <!-- Footer -->
         <footer class="footer">
             <p>Designed and built by <span class="grad">Akshata Kamble</span></p>
-            <a class="footer__top" href="#home">Back to top &uarr;</a>
+            <a class="footer__top" href="#introduction">Back to top &uarr;</a>
         </footer>
 
     </main>

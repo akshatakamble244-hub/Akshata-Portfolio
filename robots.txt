@@ -1,0 +1,13 @@
+# robots.txt
+# Akshata Kamble | Portfolio
+# https://akshatakamble244-hub.github.io/Akshata-Portfolio/
+#
+# This is a public portfolio site. Every page is intended to be indexed
+# and appear in search results.
+
+User-agent: *
+Allow: /
+
+# Sitemap intentionally omitted until the final portfolio URL is confirmed.
+# Once the live address is final, uncomment and update the line below:
+# Sitemap: https://akshatakamble244-hub.github.io/Akshata-Portfolio/sitemap.xml

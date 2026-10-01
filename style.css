@@ -374,7 +374,7 @@ svg { display: block; }
 
 /* ==========================================================================
    3.5 TOP NAVIGATION BAR
-   A fixed bar across the top of the page holding the brand and the eight
+   A fixed bar across the top of the page holding the brand and the six
    section links. It is always visible: the hero starts below it, and every
    anchor jump is offset by --topbar-h so nothing hides behind the bar.
    ========================================================================== */
@@ -531,83 +531,117 @@ svg { display: block; }
 
 /* ==========================================================================
    4. RIGHT-SIDE VERTICAL NAVIGATION RAIL
-   A fixed rail pinned to the right edge with one icon per section.
+   A slim, fixed vertical container pinned to the right edge of the viewport.
+   It holds one icon per section, glows softly at all times, and the icon of
+   the section currently on screen lights up much more strongly. It stays on
+   screen at all times because it is position:fixed, so scrolling never
+   moves it.
    ========================================================================== */
 .rail {
     position: fixed;
     top: 50%;
-    right: 16px;
+    right: 18px;
     z-index: 70;
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    padding: 12px 10px;
+    align-items: center;
+    gap: 4px;
+    padding: 14px 9px;
     transform: translateY(-50%);
-    background: rgba(7, 11, 22, 0.78);
-    border: 1px solid rgba(34, 211, 238, 0.38);
-    border-radius: 24px;
-    box-shadow: 0 0 20px rgba(34, 211, 238, 0.2), 0 0 48px rgba(34, 211, 238, 0.09),
-                inset 0 0 22px rgba(34, 211, 238, 0.05);
+
+    /* Slim rounded container with a glowing border */
+    background: rgba(6, 10, 20, 0.72);
+    border: 1px solid rgba(34, 211, 238, 0.30);
+    border-radius: var(--radius-pill);
+    box-shadow:
+        0 0 24px rgba(34, 211, 238, 0.16),
+        0 0 56px rgba(34, 211, 238, 0.08),
+        inset 0 0 20px rgba(34, 211, 238, 0.06),
+        0 18px 44px rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+
     transition: box-shadow var(--mid), border-color var(--mid);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+}
+
+/* A soft neon halo bleeding out of the container, the "glowing" look.
+   It sits at z-index 0, which paints above the rail's own translucent
+   background but below the links (z-index 1), so it never washes out an
+   icon and never intercepts clicks. */
+.rail::after {
+    content: "";
+    position: absolute;
+    inset: -14px;
+    z-index: 0;
+    border-radius: inherit;
+    background: radial-gradient(ellipse at 50% 50%,
+                rgba(34, 211, 238, 0.22) 0%,
+                rgba(34, 211, 238, 0.08) 45%,
+                transparent 72%);
+    filter: blur(10px);
+    pointer-events: none;
 }
 
 .rail__link {
     position: relative;
+    z-index: 1;
     display: grid;
     place-items: center;
-    width: 46px;
-    height: 46px;
+    width: 44px;
+    height: 44px;
     color: var(--text-dim);
     border: 1px solid transparent;
-    border-radius: 14px;
+    border-radius: 50%;
     transition: color var(--fast), background var(--fast),
                 border-color var(--fast), box-shadow var(--fast), transform var(--fast);
 }
 
 .rail__icon {
-    width: 21px;
-    height: 21px;
-    transition: transform var(--fast);
+    width: 20px;
+    height: 20px;
+    transition: transform var(--fast), filter var(--fast);
 }
 
 .rail__link:hover {
     color: var(--cyan);
-    background: rgba(34, 211, 238, 0.09);
+    background: rgba(34, 211, 238, 0.10);
     border-color: var(--line);
     transform: translateX(-3px);
 }
 
 .rail__link:hover .rail__icon {
-    transform: scale(1.12);
+    transform: scale(1.14);
+    filter: drop-shadow(0 0 5px var(--glow-cyan));
 }
 
 /* Active section (set by script.js while scrolling) */
 .rail__link.is-active {
-    color: var(--cyan);
-    background: rgba(34, 211, 238, 0.14);
+    color: var(--cyan-bright);
+    background: rgba(34, 211, 238, 0.18);
     border-color: var(--line-strong);
-    box-shadow: 0 0 22px rgba(34, 211, 238, 0.28), inset 0 0 14px rgba(34, 211, 238, 0.12);
+    box-shadow:
+        0 0 18px rgba(34, 211, 238, 0.45),
+        0 0 38px rgba(34, 211, 238, 0.22),
+        inset 0 0 14px rgba(34, 211, 238, 0.18);
 }
 
 .rail__link.is-active .rail__icon {
-    filter: drop-shadow(0 0 7px var(--cyan));
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 8px var(--cyan)) drop-shadow(0 0 16px rgba(34, 211, 238, 0.5));
 }
 
 /* Glowing bar on the outer edge of the active icon */
 .rail__link.is-active::after {
     content: "";
     position: absolute;
-    right: -11px;
+    right: -10px;
     top: 50%;
     width: 3px;
-    height: 24px;
+    height: 22px;
     transform: translateY(-50%);
     background: linear-gradient(var(--cyan), var(--blue));
     border-radius: var(--radius-pill);
-    box-shadow: 0 0 12px var(--cyan);
+    box-shadow: 0 0 12px var(--cyan), 0 0 22px rgba(34, 211, 238, 0.6);
 }
 
 /* Label that slides out on hover / when active */
@@ -624,7 +658,7 @@ svg { display: block; }
     background: rgba(8, 12, 24, 0.95);
     border: 1px solid var(--line-strong);
     border-radius: 10px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 16px rgba(34, 211, 238, 0.18);
     opacity: 0;
     pointer-events: none;
     transition: opacity var(--fast), transform var(--fast);
@@ -978,13 +1012,36 @@ body.is-menu-open { overflow: hidden; }
    ========================================================================== */
 .hero {
     /* .page already reserves --topbar-h above the hero, so the hero itself
-       only needs the rest of the viewport to fill exactly one screen. */
+       only needs the rest of the viewport to fill exactly one screen.
+       This section is now #introduction and also carries the intro copy and
+       the About cards below the hero grid, so it is a column: the grid keeps
+       the original centred look, and the blocks below it stack normally. */
     min-height: calc(100vh - var(--topbar-h));
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
     padding-top: 34px;
     padding-bottom: 20px;
 }
+
+/* Breathing room between the hero grid and the blocks folded into the same
+   #introduction section (intro copy, then the About cards). */
+.hero__grid + .intro__inner { margin-top: 96px; }
+
+.intro__inner + .sec-head { margin-top: 96px; }
+
+/* The About block is a sub-heading inside #introduction, not its own section,
+   so its title is scaled down to read as a part of that section. */
+.sec-head--sub { margin-bottom: 34px; }
+
+.sec-head--sub .sec-head__title {
+    font-size: clamp(24px, 3.2vw, 32px);
+}
+
+/* The Learning & Career block is folded into the Education section, so it
+   needs its own gap from the education timeline above it. */
+.learning-career { margin-top: 104px; }
 
 .hero__grid {
     display: grid;

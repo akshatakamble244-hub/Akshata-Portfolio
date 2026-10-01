@@ -1,0 +1,22 @@
+{
+  "name": "Akshata Kamble - Portfolio",
+  "short_name": "Akshata Portfolio",
+  "description": "Portfolio of Akshata Kamble, an AI Engineer and Machine Learning Student working with Python, Generative AI, Agentic AI, LLMs, RAG, LangChain and LangGraph.",
+  "lang": "en",
+  "dir": "ltr",
+  "id": "/Akshata-Portfolio/",
+  "start_url": "/",
+  "scope": "/Akshata-Portfolio/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "categories": ["portfolio", "personal", "education"],
+  "icons": [
+    {
+      "src": "images/profile.jpg",
+      "sizes": "1080x1108",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ]
+}

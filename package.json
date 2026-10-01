@@ -1,0 +1,16 @@
+{
+  "name": "akshata-portfolio",
+  "version": "1.0.0",
+  "description": "<h1 align=\"center\">Hi, I'm Akshata Kamble 👋</h1>",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "lucide": "^1.49.0"
+  }
+}

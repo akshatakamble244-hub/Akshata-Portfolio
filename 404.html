@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ============================== SEO ============================== -->
+    <title>Page Not Found (404) | Akshata Kamble</title>
+    <meta name="description" content="The page you are looking for does not exist or may have been moved. Head back to the portfolio of Akshata Kamble, AI Engineer and Machine Learning Student.">
+    <meta name="author" content="Akshata Kamble">
+    <meta name="theme-color" content="#04060d">
+    <!-- An error page has no place in search results -->
+    <meta name="robots" content="noindex, follow">
+
+    <!-- ======================= FONTS + STYLESHEET =======================
+         Reuses the same fonts and the same style.css as index.html, so this
+         page inherits the exact colours, spacing and typography of the site.
+         The <style> block below only adds the few rules this one page needs. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="icon" type="image/jpeg" href="images/profile.jpg">
+
+    <style>
+        /* ==================================================================
+           404 PAGE - STYLES FOR THIS FILE ONLY
+           style.css is left untouched. Every rule below is scoped to the
+           .nf-* classes used in this page's markup, and the two layout
+           overrides (.topbar / .page) undo the right-hand space that
+           style.css reserves for the icon rail, which this page does not use.
+           ================================================================== */
+
+        /* ---- Layout ---------------------------------------------------------
+           No icon rail on this page, so the bar and the content use the
+           full width. Both selectors are doubled up (two classes) so they
+           outrank the single-class rules in style.css. */
+        .topbar.nf-topbar { padding-right: var(--gutter); }
+        .page.nf-page     { margin-right: 0; }
+
+        /* Fills the space under the top bar and centres the panel in it */
+        .section.nf {
+            display: grid;
+            place-items: center;
+            min-height: calc(100vh - var(--topbar-h));
+            min-height: calc(100svh - var(--topbar-h));
+            padding: 40px 0 20px;
+        }
+
+        /* ---- Panel ---------------------------------------------------------
+           Same dark glass and glowing border as a .card on the home page */
+        .card.nf__panel {
+            width: 100%;
+            max-width: 720px;
+            padding: clamp(30px, 5.5vw, 58px) clamp(20px, 5vw, 56px);
+            text-align: center;
+            transform: none;
+        }
+
+        /* Soft cyan light behind the number, so the panel never looks flat */
+        .nf__panel::before {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 4%;
+            width: 76%;
+            height: 62%;
+            transform: translateX(-50%);
+            background: radial-gradient(ellipse at 50% 40%, var(--glow-cyan) 0%, transparent 68%);
+            opacity: 0.5;
+            filter: blur(26px);
+            pointer-events: none;
+        }
+
+        /* The large "404". Uses the same cyan-to-blue gradient as the
+           headings on the home page, with a soft glow around it. */
+        .nf__code {
+            position: relative;
+            font-family: var(--font-head);
+            font-size: clamp(92px, 20vw, 172px);
+            font-weight: 700;
+            line-height: 0.94;
+            letter-spacing: -2px;
+            filter: drop-shadow(0 0 30px rgba(34, 211, 238, 0.28));
+        }
+
+        .nf__title {
+            position: relative;
+            margin-top: 14px;
+            font-family: var(--font-head);
+            font-size: clamp(23px, 4.2vw, 34px);
+            font-weight: 700;
+            line-height: 1.2;
+            letter-spacing: -0.6px;
+        }
+
+        .nf__text {
+            position: relative;
+            max-width: 480px;
+            margin: 14px auto 0;
+            font-size: 15.5px;
+            color: var(--text-soft);
+        }
+
+        .nf__actions {
+            position: relative;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .nf__actions .btn { font-size: 15px; padding: 14px 28px; }
+
+        /* ---- Entrance ------------------------------------------------------
+           index.html fades its sections in with script.js. This page has no
+           script, so the same effect is done in pure CSS, staggered so the
+           number, the text and the button arrive one after the other. */
+        @keyframes nf-rise {
+            from { opacity: 0; transform: translateY(18px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .nf__panel > * { animation: nf-rise 0.7s var(--ease) both; }
+        .nf__panel > .eyebrow  { animation-delay: 0.04s; }
+        .nf__code              { animation-delay: 0.12s; }
+        .nf__title             { animation-delay: 0.2s; }
+        .nf__text              { animation-delay: 0.28s; }
+        .nf__actions           { animation-delay: 0.36s; }
+
+        @media (prefers-reduced-motion: reduce) {
+            .nf__panel > * { animation: none; }
+        }
+
+        /* ---- Responsive ----------------------------------------------------
+           The panel above already scales with clamp(), so these rules only
+           tighten things up on the narrowest screens. */
+        @media (max-width: 560px) {
+            .section.nf { padding: 24px 0 10px; }
+            .nf__code   { letter-spacing: -1px; }
+            .nf__text   { font-size: 14.5px; }
+            /* One full-width button reads better than a row on a phone */
+            .nf__actions .btn { width: 100%; }
+        }
+
+        @media (max-width: 380px) {
+            .nf__code { font-size: 82px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Same decorative background layers as the home page: two blurred CSS
+         glows and a faint grid. Both sit behind the content (z-index 0) and
+         never take pointer events. -->
+    <div class="bg-glow" aria-hidden="true"></div>
+    <div class="bg-grid" aria-hidden="true"></div>
+
+    <!-- ======================================================================
+         TOP BAR
+         Brand only, and it points back to the home page. index.html also
+         carries the section links and a hamburger button here; this page has
+         nowhere to scroll to, so the brand alone is all that is needed.
+         ====================================================================== -->
+    <header class="topbar nf-topbar" id="topbar">
+        <a class="topbar__brand" href="./index.html" aria-label="Akshata Kamble, back to home">
+            <span class="topbar__mark" aria-hidden="true">AK</span>
+            <span class="topbar__name">Akshata&nbsp;Kamble</span>
+        </a>
+    </header>
+
+    <main class="page nf-page">
+        <section class="section nf">
+
+            <div class="card nf__panel">
+                <span class="eyebrow">
+                    <span class="eyebrow__dot" aria-hidden="true"></span>
+                    Error 404
+                </span>
+
+                <h1 class="nf__code grad">404</h1>
+
+                <h2 class="nf__title">Oops! Page Not Found</h2>
+
+                <p class="nf__text">
+                    The page you're looking for doesn't exist or may have been moved.
+                </p>
+
+                <div class="nf__actions">
+                    <a class="btn btn--primary" href="./index.html">&larr; Back to Home</a>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Footer, same wording and styling as the home page -->
+        <footer class="footer">
+            <p>Designed and built by <span class="grad">Akshata Kamble</span></p>
+            <a class="footer__top" href="./index.html">Back to home &uarr;</a>
+        </footer>
+    </main>
+
+</body>
+</html>
